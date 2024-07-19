@@ -18,7 +18,7 @@ export default function Home() {
     ({ name: `Tab ${index}`, selected: false } as Tab);
 
   //? default tabs
-  const defaultTabs = Array.from({ length: 1 }, (_, index) => dt(index));
+  const defaultTabs = Array.from({ length: 99 }, (_, index) => dt(index));
 
   const [tabs, setTabs] = useState(defaultTabs);
 
@@ -39,7 +39,7 @@ export default function Home() {
           {/* top bar */}
           <div className="w-full flex">
             <div className="w-full flex justify-between">
-            <div className="flex bg-primary/30 overflow-x-scroll">
+            <div className="flex bg-primary/30 overflow-x-scroll font-mono">
               {tabs.map((tab, index) => (
                 <Tab handleTabClick={handleTabClick} tab={tab} key={index} />
               ))}
@@ -49,7 +49,7 @@ export default function Home() {
 
               <button
                 onClick={handleNewTabClick}
-                className="border border-primary m-2 p-2 hover:border-secondary transition-all"
+                className="border border-primary m-2 p-2 hover:border-secondary"
               >
                 <PlusIcon className="w-8 h-8 text-primary" />
               </button>

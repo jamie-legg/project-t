@@ -5,22 +5,49 @@ import {
   PlusIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { classNames, idGenerator, sendTab } from "./utils";
 
-type Tab = {
+export type Tab = {
+  id: string;
   name: string;
   selected: boolean;
+  content: string;
 };
 
 export default function Home() {
   //? default tab
   const dt = (index: number) =>
-    ({ name: `Tab ${index}`, selected: false } as Tab);
+    ({
+      id: idGenerator(),
+      name: `Tab ${index}`,
+      selected: false,
+      content: "",
+    } as Tab);
 
   //? default tabs
-  const defaultTabs = Array.from({ length: 99 }, (_, index) => dt(index));
+  const defaultTabs = Array.from({ length: 10 }, (_, index) => dt(index));
 
   const [tabs, setTabs] = useState(defaultTabs);
+
+  useEffect(() => {
+    const selectedTab = tabs.find((tab) => tab.selected);
+    if (selectedTab) {
+      sendTab(selectedTab);
+    }
+  }, [tabs]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const incomingText = e.target.value;
+    const selectedTab = tabs.find((tab) => tab.selected);
+    if (selectedTab) {
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.selected ? { ...tab, content: incomingText } : tab
+        )
+      );
+    }
+  };
 
   const handleTabClick = (tab: Tab) => {
     setTabs((prevTabs) =>
@@ -34,16 +61,18 @@ export default function Home() {
 
   return (
     <div className="h-screen p-2">
+      {/* blur overlay */}
+      {/* <div className="absolute inset-0 backdrop-blur-lg opacity-100 hover:opacity-0 transition-all"></div> */}
       <div className="border-primary border-2 h-full p-2">
         <div className="border-primary border h-full flex flex-col justify-between">
           {/* top bar */}
           <div className="w-full flex">
             <div className="w-full flex justify-between">
-            <div className="flex bg-primary/30 overflow-x-scroll font-mono">
-              {tabs.map((tab, index) => (
-                <Tab handleTabClick={handleTabClick} tab={tab} key={index} />
-              ))}
-            </div>
+              <div className="flex bg-primary/30 overflow-x-scroll font-mono">
+                {tabs.map((tab, index) => (
+                  <Tab handleTabClick={handleTabClick} tab={tab} key={index} />
+                ))}
+              </div>
 
               {/* new tab button */}
 
@@ -57,6 +86,11 @@ export default function Home() {
           </div>
           {/* main content */}
           <div className="border border-primary border-dashed h-full m-2">
+            <textarea
+              className="w-full h-full bg-transparent border-none p-2 resize-none"
+              onChange={handleTextChange}
+              value={tabs.find((tab) => tab.selected)?.content}
+            ></textarea>
             {/* content */}
           </div>
           {/* main controls */}
@@ -90,5 +124,3 @@ function Tab({ tab, handleTabClick }: TabProps) {
     </button>
   );
 }
-
-const classNames = (...classes: string[]) => classes.filter(Boolean).join(" ");
